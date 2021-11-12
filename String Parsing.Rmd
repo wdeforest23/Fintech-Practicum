@@ -1,0 +1,117 @@
+---
+title: "Automated Data Wrangling"
+author: "William DeForest"
+date: "11/4/2021"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+#load packages
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(stringr) 
+library(readxl)
+```
+
+```{r}
+#import raw PDL data
+PDL_Data_raw <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Superseded\\founder-data1-all data.xlsx")
+```
+
+```{r}
+#parse education for school
+
+Education_Sep <- str_split(PDL_Data_raw$education, "\\}, \\{")
+school <- str_extract_all(Education_Sep,"\\'school': \\{'name': '.{4,100}', 'type'") %>% str_extract_all(": '.+',") %>% str_remove_all(", 'type'\", \"'school': \\{'name':") %>% str_remove("^...") %>% str_remove("..$") %>% str_split("' '", simplify=TRUE) %>% as.data.frame()
+
+school <- school %>% rename("School 1" = V1) %>% rename("School 2" = V2) %>% rename("School 3" = V3) %>% rename("School 4" = V4) %>% rename("School 5" = V5) %>% rename("School 6" = V6) %>% rename("School 7" = V7) %>% rename("School 8" = V8) %>% rename("School 9" = V9)
+```
+
+```{r}
+#parse education for major
+
+major <- str_extract_all(Education_Sep, "'majors': \\[.{0,50}\\], 'minors':") %>% str_remove_all("'majors': ") %>% str_remove_all(", 'minors':") %>% str_extract_all("\\[.*\\]") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
+
+major <- major %>% rename("Major 1" = V1) %>% rename("Major 2" = V2) %>% rename("Major 3" = V3) %>% rename("Major 4" = V4) %>% rename("Major 5" = V5) %>% rename("Major 6" = V6) %>% rename("Major 7" = V7) %>% rename("Major 8" = V8) %>% rename("Major 9" = V9) %>% rename("Major 10" = V10)
+```
+
+```{r}
+#merge data frames
+
+PDL_Data <- cbind(PDL_Data_raw, school, major)
+```
+
+```{r}
+#output data into Excel
+write.csv(PDL_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\PDL_Data_Parsed.csv", row.names = FALSE)
+```
+
+
+
+
+
+
+## working space/saved code
+
+%>% str_remove_all("\\\"") 
+
+%>% str_split("\\], \\[")
+
+%>% str_split(", ", simplify=TRUE) %>% as.data.frame()
+
+%>% str_remove_all("\\\", \\\"")
+
+%>% str_extract_all("\\[.{0,50}\\]")
+
+%>% str_remove_all("'majors': ") %>% str_remove_all(", 'minors':")
+
+%>% str_extract_all("\\[.*\\]")
+
+
+
+
+school_dirty <- str_extract_all(school_dirty, ": '.{4,100}',") %>% as.character()
+school_dirty <- str_extract_all(school_dirty, ": '.{4,100}',")
+school_dirty2 <- str_remove_all(school_dirty, "'school' : \\{'name': '")
+func <- function(Education_Sep) {
+  school_name <- str_extract(Education_Sep,"\\{'school': \\{'name': '.{4,100}', 'type'")
+  major <- str_extract(Education_Sep, "'majors': ['{4,100}'], 'minors'")
+  data_frame(school_name, major)
+}
+edulist <- lapply(Education_Sep, FUN=func, data=PDL_Data_raw)
+
+Education_Sep <- unlist(Education_Sep)
+```
+school_name_1 <- str_extract_all(x,"\\{'school': \\{'name': '.{4,100}', 'type'")
+school_name_2 <- str_replace(school_name_dirty, "\\{'school': \\{'name':", " ")
+school_name_3 <- str_extract_all(school_name_2, "'.{4,100}', 'type'")
+school_name_3
+
+%>% str_c(school_name,sep="-") %>% 
+  str_extract_all(": '.{4,100}',") %>% 
+  str_remove_all("[,:']") %>% 
+  trimws()
+school_name
+```
+x_split <- str_split(x, "\\{'school': \\{'name':")
+x_split
+
+a <- "[{'company': {'name': 'the allant group', 'size': '51-200', 'id': 'the-allant-group', 'founded': '1984', 'industry': 'marketing and advertising', 'location': {'name': 'downers grove, illinois, united states', 'locality': 'downers grove', 'region': 'illino"
+
+a
+
+b <- str_extract(a, "\\[\\{'company': \\{'name': '\\D+',") %>% 
+  str_extract("name':.+") %>% 
+  str_remove("name':") %>% 
+  str_remove_all("[',]") %>% 
+  trimws()
+
+b
+
+x <- "[{'school': {'name': 'california state university, long beach', 'type': 'post-secondary institution', 'id': 'B7Nor5iR123BEqwt48lJVg_0', 'location': {'name': 'long beach, california, united states', 'locality': 'long beach', 'region': 'california', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/california-state-university-long-beach', 'facebook_url': 'facebook.com/csulb', 'twitter_url': 'twitter.com/csulb', 'linkedin_id': '17828', 'website': 'csulb.edu', 'domain': 'csulb.edu'}, 'degrees': ['master of science', 'masters'], 'start_date': '1976', 'end_date': None, 'majors': ['psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'claremont graduate university', 'type': 'post-secondary institution', 'id': '5RdUAPiwUnBV1FB0HUuDzA_0', 'location': {'name': 'claremont, california, united states', 'locality': 'claremont', 'region': 'california', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/claremont-graduate-university', 'facebook_url': 'facebook.com/claremontgraduateuniversity', 'twitter_url': 'twitter.com/cgunews', 'linkedin_id': '17843', 'website': 'cgu.edu', 'domain': 'cgu.edu'}, 'degrees': ['doctorates', 'doctor of philosophy'], 'start_date': '1981', 'end_date': '1983', 'majors': ['industrial and organizational psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'queens college', 'type': 'post-secondary institution', 'id': '7hlkmWGeBtRdgT3SYoiKCQ_0', 'location': {'name': 'queens, new york, united states', 'locality': 'queens', 'region': 'new york', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/queens-college', 'facebook_url': 'facebook.com/queenscollege', 'twitter_url': 'twitter.com/qc_news', 'linkedin_id': '18935', 'website': 'qc.cuny.edu', 'domain': 'cuny.edu'}, 'degrees': ['bachelors', 'bachelor of arts'], 'start_date': '1971', 'end_date': '1975', 'majors': ['economics', 'psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'tel aviv university', 'type': 'post-secondary institution', 'id': 'KGTKnKcOCcRwfhLZS2Rt3g_0', 'location': {'name': 'tel aviv, israel', 'locality': None, 'region': 'tel aviv', 'country': 'israel', 'continent': 'asia'}, 'linkedin_url': 'linkedin.com/school/tel-aviv-university', 'facebook_url': 'facebook.com/tau.main', 'twitter_url': 'twitter.com/telavivuni1', 'linkedin_id': '13403', 'website': 'tau.ac.il', 'domain': 'tau.ac.il'}, 'degrees': ['masters', 'master of arts'], 'start_date': '2020', 'end_date': None, 'majors': [], 'minors': [], 'gpa': None}, {'school': {'name': 'tel aviv university', 'type': 'post-secondary institution', 'id': 'KGTKnKcOCcRwfhLZS2Rt3g_0', 'location': {'name': 'tel aviv, israel', 'locality': None, 'region': 'tel aviv', 'country': 'israel', 'continent': 'asia'}, 'linkedin_url': 'linkedin.com/school/tel-aviv-university', 'facebook_url': 'facebook.com/tau.main', 'twitter_url': 'twitter.com/telavivuni1', 'linkedin_id': '13403', 'website': 'tau.ac.il', 'domain': 'tau.ac.il'}, 'end_date': '2018', 'start_date': '2017', 'gpa': None, 'degrees': ['masters', 'master of arts'], 'majors': ['philosophy', 'history'], 'minors': []}]"
+
+```
+
+If a list, should be able to access using [[]]. Convert to a vector. as.vector then use apply
