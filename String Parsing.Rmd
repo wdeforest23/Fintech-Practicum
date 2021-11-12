@@ -21,9 +21,17 @@ PDL_Data_raw <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\
 ```
 
 ```{r}
-#parse education for school
+#separate experience and education strings
 
 Education_Sep <- str_split(PDL_Data_raw$education, "\\}, \\{")
+Experience_Sep <- str_split(PDL_Data_raw$experience, "\\}, \\{")
+```
+
+
+
+```{r}
+#parse education for school
+
 school <- str_extract_all(Education_Sep,"\\'school': \\{'name': '.{4,100}', 'type'") %>% str_extract_all(": '.+',") %>% str_remove_all(", 'type'\", \"'school': \\{'name':") %>% str_remove("^...") %>% str_remove("..$") %>% str_split("' '", simplify=TRUE) %>% as.data.frame()
 
 school <- school %>% rename("School 1" = V1) %>% rename("School 2" = V2) %>% rename("School 3" = V3) %>% rename("School 4" = V4) %>% rename("School 5" = V5) %>% rename("School 6" = V6) %>% rename("School 7" = V7) %>% rename("School 8" = V8) %>% rename("School 9" = V9)
@@ -38,9 +46,18 @@ major <- major %>% rename("Major 1" = V1) %>% rename("Major 2" = V2) %>% rename(
 ```
 
 ```{r}
+#parse experience for company
+
+company <- Experience_Sep %>% str_extract_all("'company': \\{'name': .{0,50}, 'size':") %>% str_remove_all("'company': \\{'name': '") %>% str_remove_all("', 'size':") %>% str_remove("^...") %>% str_remove("..$") %>% str_remove_all("\\n") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
+
+company <- company %>% rename("Company 1" = V1) %>% rename("Company 2" = V2) %>% rename("Company 3" = V3) %>% rename("Company 4" = V4) %>% rename("Company 5" = V5) %>% rename("Company 6" = V6) %>% rename("Company 7" = V7) %>% rename("Company 8" = V8) %>% rename("Company 9" = V9) %>% rename("Company 10" = V10) %>% rename("Company 11" = V11) %>% rename("Company 12" = V12) %>% rename("Company 13" = V13) %>% rename("Company 14" = V14) %>% rename("Company 15" = V15) %>% rename("Company 16" = V16) %>% rename("Company 17" = V17) %>% rename("Company 18" = V18) %>% rename("Company 19" = V19) %>% rename("Company 20" = V20) %>% rename("Company 21" = V21) %>% rename("Company 22" = V22) %>% rename("Company 23" = V23) %>% rename("Company 24" = V24) %>% rename("Company 25" = V25) %>% rename("Company 26" = V26) %>% rename("Company 27" = V27) %>% rename("Company 28" = V28) %>% rename("Company 29" = V29) %>% rename("Company 30" = V30) %>% rename("Company 31" = V31) %>% rename("Company 32" = V32) %>% rename("Company 33" = V33) %>% rename("Company 34" = V34) %>% rename("Company 35" = V35) %>% rename("Company 36" = V36) %>% rename("Company 37" = V37) %>% rename("Company 38" = V38) %>% rename("Company 39" = V39) %>% rename("Company 40" = V40) %>% rename("Company 41" = V41) %>% rename("Company 42" = V42) %>% rename("Company 43" = V43) %>% rename("Company 44" = V44) %>% rename("Company 45" = V45) %>% rename("Company 46" = V46)
+
+```
+
+```{r}
 #merge data frames
 
-PDL_Data <- cbind(PDL_Data_raw, school, major)
+PDL_Data <- cbind(PDL_Data_raw, school, major, company)
 ```
 
 ```{r}
