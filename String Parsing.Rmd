@@ -27,8 +27,6 @@ Education_Sep <- str_split(PDL_Data_raw$education, "\\}, \\{")
 Experience_Sep <- str_split(PDL_Data_raw$experience, "\\}, \\{")
 ```
 
-
-
 ```{r}
 #parse education for school
 
@@ -44,6 +42,15 @@ major <- str_extract_all(Education_Sep, "'majors': \\[.{0,50}\\], 'minors':") %>
 
 major <- major %>% rename("Major 1" = V1) %>% rename("Major 2" = V2) %>% rename("Major 3" = V3) %>% rename("Major 4" = V4) %>% rename("Major 5" = V5) %>% rename("Major 6" = V6) %>% rename("Major 7" = V7) %>% rename("Major 8" = V8) %>% rename("Major 9" = V9) %>% rename("Major 10" = V10)
 ```
+
+```{r}
+#parse education for degree
+
+degree <- str_extract_all(Education_Sep, "'degrees': \\[.{0,50}\\], '") 
+
+
+```
+
 
 ```{r}
 #parse experience for company
@@ -66,7 +73,9 @@ write.csv(PDL_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech 
 ```
 
 
+Degree, Start date, end date, minor?
 
+Industry, size, title, start date, end date
 
 
 
