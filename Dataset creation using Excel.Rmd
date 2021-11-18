@@ -9,11 +9,6 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-
-```
-
-
 
 **Dataset creation using Excel**
 
@@ -67,7 +62,6 @@ write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\
 
 ```{r}
 library(dplyr)
-regression <- lm(Total_Financing_Rounds ~ Pitzer_Dummy +	HMC_Dummy	+ CMC_Dummy +	Scripps_Dummy +	Pomona_Dummy, data = Combined_Data_Success_Dummies)
-print(regression)
+CMC_Obs <- Combined_Data_Success_Dummies
 ```
 
