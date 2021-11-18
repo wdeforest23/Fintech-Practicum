@@ -145,62 +145,98 @@ write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\
 ```
 
 ``` r
+#summary statistics
+
+CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1")
+CMC_econ <- CMC_Obs %>% group_by(economics_dummy) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
+CMC_econ
+```
+
+    ## # A tibble: 2 x 3
+    ##   economics_dummy     n  prop
+    ##             <dbl> <int> <dbl>
+    ## 1               0    61 0.415
+    ## 2               1    86 0.585
+
+``` r
+CMC_gender <- CMC_Obs %>% group_by(gender) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
+CMC_gender
+```
+
+    ## # A tibble: 3 x 3
+    ##   gender     n  prop
+    ##   <chr>  <int> <dbl>
+    ## 1 -         16 0.109
+    ## 2 female    15 0.102
+    ## 3 male     116 0.789
+
+``` r
+Pomona_Obs <- Combined_Data_Success_Dummies %>% filter(Pomona_Dummy == "1") %>% head()
+
+Pitzer_Obs <- Combined_Data_Success_Dummies %>% filter(Pitzer_Dummy == "1") %>% head()
+
+Scripps_Obs <- Combined_Data_Success_Dummies %>% filter(Scripps_Dummy == "1") %>% head()
+
+HMC_Obs <- Combined_Data_Success_Dummies %>% filter(HMC_Dummy == "1") %>% head()
+
+Summary_7C <- Combined_Data_Success_Dummies %>% rename("School_Affiliations_of_Founders"= 'School Affiliations of Founders') %>% group_by(School_Affiliations_of_Founders) %>% summarize(n=n()) %>% mutate(prop=n/sum(n), total=sum(n))
+Summary_7C
+```
+
+    ## # A tibble: 19 x 4
+    ##    School_Affiliations_of_Founders     n    prop total
+    ##    <chr>                           <int>   <dbl> <int>
+    ##  1 CGU                                63 0.0775    813
+    ##  2 CGU,CMC                             1 0.00123   813
+    ##  3 CGU,PI                              3 0.00369   813
+    ##  4 CMC                               153 0.188     813
+    ##  5 CMC,CGU                             1 0.00123   813
+    ##  6 CMC,Keck                            2 0.00246   813
+    ##  7 CMC,PO                              2 0.00246   813
+    ##  8 HMC                               175 0.215     813
+    ##  9 HMC,CGU                             1 0.00123   813
+    ## 10 HMC,CMC                             3 0.00369   813
+    ## 11 HMC,PO                              1 0.00123   813
+    ## 12 Keck                               32 0.0394    813
+    ## 13 PI                                 77 0.0947    813
+    ## 14 PI,CGU                              1 0.00123   813
+    ## 15 PI,HMC                              1 0.00123   813
+    ## 16 PO                                273 0.336     813
+    ## 17 PO,CGU                              1 0.00123   813
+    ## 18 PO,HMC                              2 0.00246   813
+    ## 19 SC                                 21 0.0258    813
+
+``` r
 #Standardized Success variable distributions
 library(dplyr)
 library(ggplot2)
-CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1")
-CMC_Obs
-```
 
-    ## # A tibble: 147 x 904
-    ## # Groups:   Company [137]
-    ##    Company             Founders.x founders_lower gender birth_year linkedin_userna~
-    ##    <chr>               <chr>      <chr>          <chr>  <chr>                 <dbl>
-    ##  1 Traffic Marketplace Adam Altm~ adam altman    male   1977                      1
-    ##  2 SMNI                Adam Altm~ adam altman    male   1977                      1
-    ##  3 Rebilly             Adam Altm~ adam altman    male   1977                      1
-    ##  4 Redocly             Adam Altm~ adam altman    male   1977                      1
-    ##  5 Cheddr Media        Adam Scho~ adam schoenfe~ male   -                         1
-    ##  6 Simply Measured     Adam Scho~ adam schoenfe~ male   -                         1
-    ##  7 Siftrock            Adam Scho~ adam schoenfe~ male   -                         1
-    ##  8 SelfMade            Ajay Srid~ ajay sridhar   male   1989                      1
-    ##  9 AgVend              Alexander~ alexander rei~ male   1989                      1
-    ## 10 RetailNext          Alexei Ag~ alexei agratc~ -      -                         1
-    ## # ... with 137 more rows, and 898 more variables: facebook_username <dbl>,
-    ## #   twitter_username <dbl>, github_username <dbl>, industry...8 <chr>,
-    ## #   job_title <chr>, job_title_role <chr>, job_title_sub_role <chr>,
-    ## #   job_title_levels <chr>, job_company_name <chr>, job_company_size <chr>,
-    ## #   job_company_founded <chr>, job_company_industry <chr>,
-    ## #   job_company_location_name <chr>, job_last_updated <dttm>,
-    ## #   job_start_date <chr>, name...20 <chr>, size...21 <chr>, id...22 <chr>, ...
-
-``` r
 dist_total_capital_raised <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Capital_Raised)) + geom_density()
 dist_total_capital_raised
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 dist_Product_Market_Fit <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Product_Market_Fit)) + geom_density()
 dist_Product_Market_Fit
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
 
 ``` r
 dist_Total_Financing_Rounds <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Financing_Rounds)) + geom_density()
 dist_Total_Financing_Rounds
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-3.png)<!-- -->
 
 ``` r
 dist_Liquidity_Event_Reached <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Liquidity_Event_Reached)) + geom_density()
 dist_Liquidity_Event_Reached
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-4.png)<!-- -->
 
 ``` r
 dist_length_of_company_life <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_length_of_company_life)) + geom_density()
@@ -209,18 +245,18 @@ dist_length_of_company_life
 
     ## Warning: Removed 29 rows containing non-finite values (stat_density).
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-5.png)<!-- -->
 
 ``` r
 dist_Total_Top_VCs <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Top_VCs)) + geom_density()
 dist_Total_Top_VCs
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-6.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-6.png)<!-- -->
 
 ``` r
 dist_Combined_Success_Measure <- ggplot(data=Combined_Data_Success_Dummies, aes(x=Combined_Success_Measure)) + geom_density()
 dist_Combined_Success_Measure
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-10-7.png)<!-- -->
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-7.png)<!-- -->

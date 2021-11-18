@@ -63,12 +63,39 @@ write.csv(Unique_Obs_PDL,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fi
 write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression.csv", row.names = FALSE)
 ```
 
+
+```{r}
+#summary statistics
+
+CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1")
+CMC_econ <- CMC_Obs %>% group_by(economics_dummy) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
+CMC_econ
+CMC_gender <- CMC_Obs %>% group_by(gender) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
+CMC_gender
+
+Pomona_Obs <- Combined_Data_Success_Dummies %>% filter(Pomona_Dummy == "1") %>% head()
+
+Pitzer_Obs <- Combined_Data_Success_Dummies %>% filter(Pitzer_Dummy == "1") %>% head()
+
+Scripps_Obs <- Combined_Data_Success_Dummies %>% filter(Scripps_Dummy == "1") %>% head()
+
+HMC_Obs <- Combined_Data_Success_Dummies %>% filter(HMC_Dummy == "1") %>% head()
+
+Summary_7C <- Combined_Data_Success_Dummies %>% rename("School_Affiliations_of_Founders"= 'School Affiliations of Founders') %>% group_by(School_Affiliations_of_Founders) %>% summarize(n=n()) %>% mutate(prop=n/sum(n), total=sum(n))
+Summary_7C
+
+```
+
+
+
+
+
+
+
 ```{r}
 #Standardized Success variable distributions
 library(dplyr)
 library(ggplot2)
-CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1")
-CMC_Obs
 
 dist_total_capital_raised <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Capital_Raised)) + geom_density()
 dist_total_capital_raised
