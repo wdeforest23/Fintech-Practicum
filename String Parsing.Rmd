@@ -13,7 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(stringr) 
 library(readxl)
+library(fastDummies)
 ```
+
+
+
 
 ```{r}
 #import raw PDL data
@@ -30,9 +34,9 @@ Experience_Sep <- str_split(PDL_Data_raw$experience, "\\}, \\{")
 ```{r}
 #parse education for school
 
-school <- str_extract_all(Education_Sep,"\\'school': \\{'name': '.{4,100}', 'type'") %>% str_extract_all(": '.+',") %>% str_remove_all(", 'type'\", \"'school': \\{'name':") %>% str_remove("^...") %>% str_remove("..$") %>% str_split("' '", simplify=TRUE) %>% as.data.frame()
+school <- str_extract_all(Education_Sep,"\\'school': \\{'name': '.{4,100}', 'type'") %>% str_remove_all("', 'type'") %>% str_remove_all("'school': \\{'name': '") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
 
-school <- school %>% rename("School 1" = V1) %>% rename("School 2" = V2) %>% rename("School 3" = V3) %>% rename("School 4" = V4) %>% rename("School 5" = V5) %>% rename("School 6" = V6) %>% rename("School 7" = V7) %>% rename("School 8" = V8) %>% rename("School 9" = V9)
+school <- school %>% rename("School 1" = V1) %>% rename("School 2" = V2) %>% rename("School 3" = V3) %>% rename("School 4" = V4) %>% rename("School 5" = V5) %>% rename("School 6" = V6) %>% rename("School 7" = V7) %>% rename("School 8" = V8) %>% rename("School 9" = V9) %>% rename("School 10" = V10) %>% rename("School 11" = V11) %>% rename("School 12" = V12) %>% rename("School 13" = V13) %>% rename("School 14" = V14) %>% rename("School 15" = V15) %>% rename("School 16" = V16) %>% rename("School 17" = V17) %>% rename("School 18" = V18)
 ```
 
 ```{r}
@@ -46,10 +50,28 @@ major <- major %>% rename("Major 1" = V1) %>% rename("Major 2" = V2) %>% rename(
 ```{r}
 #parse education for degree
 
-degree <- str_extract_all(Education_Sep, "'degrees': \\[.{0,50}\\], '") 
+degree <- str_extract_all(Education_Sep, "'degrees': \\[.{0,50}\\], '") %>% str_remove_all("'majors': \\[.{0,50}\\], ") %>% str_remove_all("'degrees': ") %>% str_remove_all("c\\(\\\"") %>% 
+  str_remove_all("\\\"\\)$") %>% str_remove(", '$") %>% str_split(", '\\\", \\\"", simplify=TRUE) %>% as.data.frame()
 
+degree <- degree %>% rename("Degree 1" = V1) %>% rename("Degree 2" = V2) %>% rename("Degree 3" = V3) %>% rename("Degree 4" = V4) %>% rename("Degree 5" = V5) %>% rename("Degree 6" = V6) %>% rename("Degree 7" = V7) %>% rename("Degree 8" = V8) %>% rename("Degree 9" = V9) %>% rename("Degree 10" = V10) %>% rename("Degree 11" = V11) %>% rename("Degree 12" = V12) %>% rename("Degree 13" = V13) %>% rename("Degree 14" = V14) %>% rename("Degree 15" = V15) %>% rename("Degree 16" = V16)
 
 ```
+
+```{r}
+#parse education for start date
+
+edu_start <- str_extract_all(Education_Sep, "'start_date': .{0,25}, 'gpa':|'start_date': .{0,25}, 'end_date':") %>% str_remove_all(", 'gpa':") %>% str_remove_all(", 'end_date':") %>% str_remove_all("'start_date': ") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
+
+edu_start <- edu_start %>% rename("Edu_start 1" = V1) %>% rename("Edu_start 2" = V2) %>% rename("Edu_start 3" = V3) %>% rename("Edu_start 4" = V4) %>% rename("Edu_start 5" = V5) %>% rename("Edu_start 6" = V6) %>% rename("Edu_start 7" = V7) %>% rename("Edu_start 8" = V8) %>% rename("Edu_start 9" = V9) %>% rename("Edu_start 10" = V10) %>% rename("Edu_start 11" = V11) %>% rename("Edu_start 12" = V12) %>% rename("Edu_start 13" = V13) %>% rename("Edu_start 14" = V14) %>% rename("Edu_start 15" = V15) %>% rename("Edu_start 16" = V16) %>% rename("Edu_start 17" = V17) %>% rename("Edu_start 18" = V18) %>% rename("Edu_start 19" = V19)
+```
+
+```{r}
+# parse education for end date
+edu_end <- str_extract_all(Education_Sep, "'end_date': .{0,25}, 'start_date':|'end_date': .{0,25}, 'majors':") %>% str_remove_all(", 'start_date':") %>% str_remove_all(", 'majors':") %>% str_remove_all("'end_date': ") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
+
+edu_end <- edu_end %>% rename("Edu_end 1" = V1) %>% rename("Edu_end 2" = V2) %>% rename("Edu_end 3" = V3) %>% rename("Edu_end 4" = V4) %>% rename("Edu_end 5" = V5) %>% rename("Edu_end 6" = V6) %>% rename("Edu_end 7" = V7) %>% rename("Edu_end 8" = V8) %>% rename("Edu_end 9" = V9) %>% rename("Edu_end 10" = V10) %>% rename("Edu_end 11" = V11) %>% rename("Edu_end 12" = V12) %>% rename("Edu_end 13" = V13) %>% rename("Edu_end 14" = V14) %>% rename("Edu_end 15" = V15) %>% rename("Edu_end 16" = V16) %>% rename("Edu_end 17" = V17) %>% rename("Edu_end 18" = V18) %>% rename("Edu_end 19" = V19)
+```
+
 
 
 ```{r}
@@ -62,9 +84,49 @@ company <- company %>% rename("Company 1" = V1) %>% rename("Company 2" = V2) %>%
 ```
 
 ```{r}
+#parse experience for industry
+
+industry <- Experience_Sep %>% str_extract_all("'industry': .{0,50}, 'location':") %>% str_remove_all(", 'location':") %>% str_remove_all("'industry': ") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify = TRUE) %>% as.data.frame()
+
+industry <- industry %>% rename("Industry 1" = V1) %>% rename("Industry 2" = V2) %>% rename("Industry 3" = V3) %>% rename("Industry 4" = V4) %>% rename("Industry 5" = V5) %>% rename("Industry 6" = V6) %>% rename("Industry 7" = V7) %>% rename("Industry 8" = V8) %>% rename("Industry 9" = V9) %>% rename("Industry 10" = V10) %>% rename("Industry 11" = V11) %>% rename("Industry 12" = V12) %>% rename("Industry 13" = V13) %>% rename("Industry 14" = V14) %>% rename("Industry 15" = V15) %>% rename("Industry 16" = V16) %>% rename("Industry 17" = V17) %>% rename("Industry 18" = V18) %>% rename("Industry 19" = V19) %>% rename("Industry 20" = V20) %>% rename("Industry 21" = V21) %>% rename("Industry 22" = V22) %>% rename("Industry 23" = V23) %>% rename("Industry 24" = V24) %>% rename("Industry 25" = V25) %>% rename("Industry 26" = V26) %>% rename("Industry 27" = V27) %>% rename("Industry 28" = V28) %>% rename("Industry 29" = V29) %>% rename("Industry 30" = V30) %>% rename("Industry 31" = V31) %>% rename("Industry 32" = V32) %>% rename("Industry 33" = V33) %>% rename("Industry 34" = V34) %>% rename("Industry 35" = V35) %>% rename("Industry 36" = V36) %>% rename("Industry 37" = V37) %>% rename("Industry 38" = V38) %>% rename("Industry 39" = V39) %>% rename("Industry 40" = V40) %>% rename("Industry 41" = V41) %>% rename("Industry 42" = V42) %>% rename("Industry 43" = V43) %>% rename("Industry 44" = V44) %>% rename("Industry 45" = V45) %>% rename("Industry 46" = V46)
+```
+
+```{r}
+#parse experience for size
+
+size <- Experience_Sep %>% str_extract_all("'size': .{0,25}, 'id':") %>% str_remove_all(", 'id':") %>% str_remove_all("'size': ") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify = TRUE) %>% as.data.frame()
+
+size <- size %>% rename("Size 1" = V1) %>% rename("Size 2" = V2) %>% rename("Size 3" = V3) %>% rename("Size 4" = V4) %>% rename("Size 5" = V5) %>% rename("Size 6" = V6) %>% rename("Size 7" = V7) %>% rename("Size 8" = V8) %>% rename("Size 9" = V9) %>% rename("Size 10" = V10) %>% rename("Size 11" = V11) %>% rename("Size 12" = V12) %>% rename("Size 13" = V13) %>% rename("Size 14" = V14) %>% rename("Size 15" = V15) %>% rename("Size 16" = V16) %>% rename("Size 17" = V17) %>% rename("Size 18" = V18) %>% rename("Size 19" = V19) %>% rename("Size 20" = V20) %>% rename("Size 21" = V21) %>% rename("Size 22" = V22) %>% rename("Size 23" = V23) %>% rename("Size 24" = V24) %>% rename("Size 25" = V25) %>% rename("Size 26" = V26) %>% rename("Size 27" = V27) %>% rename("Size 28" = V28) %>% rename("Size 29" = V29) %>% rename("Size 30" = V30) %>% rename("Size 31" = V31) %>% rename("Size 32" = V32) %>% rename("Size 33" = V33) %>% rename("Size 34" = V34) %>% rename("Size 35" = V35) %>% rename("Size 36" = V36) %>% rename("Size 37" = V37) %>% rename("Size 38" = V38) %>% rename("Size 39" = V39) %>% rename("Size 40" = V40) %>% rename("Size 41" = V41) %>% rename("Size 42" = V42) %>% rename("Size 43" = V43) %>% rename("Size 44" = V44)
+```
+
+```{r}
+#parse experience for title
+
+title <- Experience_Sep %>% str_extract_all("'title': \\{'name': .{0,100}, 'role':") %>% str_remove_all(", 'role':") %>% str_remove_all("'title': \\{'name': ") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_replace_all("\\\\\\\\\\\\\\\"", "'") %>% str_split("\\\", \\\"", simplify = TRUE) %>% as.data.frame()
+
+title <- title %>% rename("Title 1" = V1) %>% rename("Title 2" = V2) %>% rename("Title 3" = V3) %>% rename("Title 4" = V4) %>% rename("Title 5" = V5) %>% rename("Title 6" = V6) %>% rename("Title 7" = V7) %>% rename("Title 8" = V8) %>% rename("Title 9" = V9) %>% rename("Title 10" = V10) %>% rename("Title 11" = V11) %>% rename("Title 12" = V12) %>% rename("Title 13" = V13) %>% rename("Title 14" = V14) %>% rename("Title 15" = V15) %>% rename("Title 16" = V16) %>% rename("Title 17" = V17) %>% rename("Title 18" = V18) %>% rename("Title 19" = V19) %>% rename("Title 20" = V20) %>% rename("Title 21" = V21) %>% rename("Title 22" = V22) %>% rename("Title 23" = V23) %>% rename("Title 24" = V24) %>% rename("Title 25" = V25) %>% rename("Title 26" = V26) %>% rename("Title 27" = V27) %>% rename("Title 28" = V28) %>% rename("Title 29" = V29) %>% rename("Title 30" = V30) %>% rename("Title 31" = V31) %>% rename("Title 32" = V32) %>% rename("Title 33" = V33) %>% rename("Title 34" = V34) %>% rename("Title 35" = V35) %>% rename("Title 36" = V36) %>% rename("Title 37" = V37) %>% rename("Title 38" = V38) %>% rename("Title 39" = V39) %>% rename("Title 40" = V40) %>% rename("Title 41" = V41) %>% rename("Title 42" = V42) %>% rename("Title 43" = V43) %>% rename("Title 44" = V44) %>% rename("Title 45" = V45)
+```
+
+```{r}
+#parse experience for start date
+
+exp_start <- Experience_Sep %>% str_extract_all("'start_date': .{0,25}, 'title':") %>% str_remove_all(", 'title':") %>% str_remove_all(", 'end_date': .{0,5}") %>% str_remove_all("'start_date': ") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"|, \\\"", simplify=TRUE) %>% as.data.frame()
+
+exp_start <- exp_start %>% rename("Exp_start 1" = V1) %>% rename("Exp_start 2" = V2) %>% rename("Exp_start 3" = V3) %>% rename("Exp_start 4" = V4) %>% rename("Exp_start 5" = V5) %>% rename("Exp_start 6" = V6) %>% rename("Exp_start 7" = V7) %>% rename("Exp_start 8" = V8) %>% rename("Exp_start 9" = V9) %>% rename("Exp_start 10" = V10) %>% rename("Exp_start 11" = V11) %>% rename("Exp_start 12" = V12) %>% rename("Exp_start 13" = V13) %>% rename("Exp_start 14" = V14) %>% rename("Exp_start 15" = V15) %>% rename("Exp_start 16" = V16) %>% rename("Exp_start 17" = V17) %>% rename("Exp_start 18" = V18) %>% rename("Exp_start 19" = V19) %>% rename("Exp_start 20" = V20) %>% rename("Exp_start 21" = V21) %>% rename("Exp_start 22" = V22) %>% rename("Exp_start 23" = V23) %>% rename("Exp_start 24" = V24) %>% rename("Exp_start 25" = V25) %>% rename("Exp_start 26" = V26) %>% rename("Exp_start 27" = V27) %>% rename("Exp_start 28" = V28) %>% rename("Exp_start 29" = V29) %>% rename("Exp_start 30" = V30) %>% rename("Exp_start 31" = V31) %>% rename("Exp_start 32" = V32) %>% rename("Exp_start 33" = V33) %>% rename("Exp_start 34" = V34) %>% rename("Exp_start 35" = V35) %>% rename("Exp_start 36" = V36) %>% rename("Exp_start 37" = V37) %>% rename("Exp_start 38" = V38) %>% rename("Exp_start 39" = V39) %>% rename("Exp_start 40" = V40)
+```
+
+```{r}
+#parse experience for end date
+
+exp_end <- Experience_Sep %>% str_extract_all("'end_date': .{0,25}, 'start_date':|'end_date': .{0,25}, 'title':") %>% str_remove_all(", 'start_date':") %>% str_remove_all(", 'title':") %>% str_remove_all("'end_date': ") %>% str_remove_all("\\n") %>% str_remove_all("c\\(\\\"") %>% str_remove_all("\\\"\\)$") %>% str_split("\\\", \\\"", simplify=TRUE) %>% as.data.frame()
+
+exp_end <- exp_end %>% rename("Exp_end 1" = V1) %>% rename("Exp_end 2" = V2) %>% rename("Exp_end 3" = V3) %>% rename("Exp_end 4" = V4) %>% rename("Exp_end 5" = V5) %>% rename("Exp_end 6" = V6) %>% rename("Exp_end 7" = V7) %>% rename("Exp_end 8" = V8) %>% rename("Exp_end 9" = V9) %>% rename("Exp_end 10" = V10) %>% rename("Exp_end 11" = V11) %>% rename("Exp_end 12" = V12) %>% rename("Exp_end 13" = V13) %>% rename("Exp_end 14" = V14) %>% rename("Exp_end 15" = V15) %>% rename("Exp_end 16" = V16) %>% rename("Exp_end 17" = V17) %>% rename("Exp_end 18" = V18) %>% rename("Exp_end 19" = V19) %>% rename("Exp_end 20" = V20) %>% rename("Exp_end 21" = V21) %>% rename("Exp_end 22" = V22) %>% rename("Exp_end 23" = V23) %>% rename("Exp_end 24" = V24) %>% rename("Exp_end 25" = V25) %>% rename("Exp_end 26" = V26) %>% rename("Exp_end 27" = V27) %>% rename("Exp_end 28" = V28) %>% rename("Exp_end 29" = V29) %>% rename("Exp_end 30" = V30) %>% rename("Exp_end 31" = V31) %>% rename("Exp_end 32" = V32) %>% rename("Exp_end 33" = V33) %>% rename("Exp_end 34" = V34) %>% rename("Exp_end 35" = V35) %>% rename("Exp_end 36" = V36) %>% rename("Exp_end 37" = V37) %>% rename("Exp_end 38" = V38) %>% rename("Exp_end 39" = V39) %>% rename("Exp_end 40" = V40) %>% rename("Exp_end 41" = V41) %>% rename("Exp_end 42" = V42) %>% rename("Exp_end 43" = V43) %>% rename("Exp_end 44" = V44) %>% rename("Exp_end 45" = V45)
+```
+
+```{r}
 #merge data frames
 
-PDL_Data <- cbind(PDL_Data_raw, school, major, company)
+PDL_Data <- cbind(PDL_Data_raw, school, major, degree, edu_start, edu_end, company, industry, size, title, exp_start, exp_end)
 ```
 
 ```{r}
@@ -72,72 +134,20 @@ PDL_Data <- cbind(PDL_Data_raw, school, major, company)
 write.csv(PDL_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\PDL_Data_Parsed.csv", row.names = FALSE)
 ```
 
+```{r}
+#create 5C dummy variables
+CMC_Dummy <- dummy_cols(PDL_Data, select_columns = 'School 1')
 
-Degree, Start date, end date, minor?
+write.csv(CMC_Dummy, "C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\CMC_Dummy_test.csv", row.names = FALSE)
 
-Industry, size, title, start date, end date
-
-
-
-## working space/saved code
-
-%>% str_remove_all("\\\"") 
-
-%>% str_split("\\], \\[")
-
-%>% str_split(", ", simplify=TRUE) %>% as.data.frame()
-
-%>% str_remove_all("\\\", \\\"")
-
-%>% str_extract_all("\\[.{0,50}\\]")
-
-%>% str_remove_all("'majors': ") %>% str_remove_all(", 'minors':")
-
-%>% str_extract_all("\\[.*\\]")
-
-
-
-
-school_dirty <- str_extract_all(school_dirty, ": '.{4,100}',") %>% as.character()
-school_dirty <- str_extract_all(school_dirty, ": '.{4,100}',")
-school_dirty2 <- str_remove_all(school_dirty, "'school' : \\{'name': '")
-func <- function(Education_Sep) {
-  school_name <- str_extract(Education_Sep,"\\{'school': \\{'name': '.{4,100}', 'type'")
-  major <- str_extract(Education_Sep, "'majors': ['{4,100}'], 'minors'")
-  data_frame(school_name, major)
-}
-edulist <- lapply(Education_Sep, FUN=func, data=PDL_Data_raw)
-
-Education_Sep <- unlist(Education_Sep)
-```
-school_name_1 <- str_extract_all(x,"\\{'school': \\{'name': '.{4,100}', 'type'")
-school_name_2 <- str_replace(school_name_dirty, "\\{'school': \\{'name':", " ")
-school_name_3 <- str_extract_all(school_name_2, "'.{4,100}', 'type'")
-school_name_3
-
-%>% str_c(school_name,sep="-") %>% 
-  str_extract_all(": '.{4,100}',") %>% 
-  str_remove_all("[,:']") %>% 
-  trimws()
-school_name
-```
-x_split <- str_split(x, "\\{'school': \\{'name':")
-x_split
-
-a <- "[{'company': {'name': 'the allant group', 'size': '51-200', 'id': 'the-allant-group', 'founded': '1984', 'industry': 'marketing and advertising', 'location': {'name': 'downers grove, illinois, united states', 'locality': 'downers grove', 'region': 'illino"
-
-a
-
-b <- str_extract(a, "\\[\\{'company': \\{'name': '\\D+',") %>% 
-  str_extract("name':.+") %>% 
-  str_remove("name':") %>% 
-  str_remove_all("[',]") %>% 
-  trimws()
-
-b
-
-x <- "[{'school': {'name': 'california state university, long beach', 'type': 'post-secondary institution', 'id': 'B7Nor5iR123BEqwt48lJVg_0', 'location': {'name': 'long beach, california, united states', 'locality': 'long beach', 'region': 'california', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/california-state-university-long-beach', 'facebook_url': 'facebook.com/csulb', 'twitter_url': 'twitter.com/csulb', 'linkedin_id': '17828', 'website': 'csulb.edu', 'domain': 'csulb.edu'}, 'degrees': ['master of science', 'masters'], 'start_date': '1976', 'end_date': None, 'majors': ['psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'claremont graduate university', 'type': 'post-secondary institution', 'id': '5RdUAPiwUnBV1FB0HUuDzA_0', 'location': {'name': 'claremont, california, united states', 'locality': 'claremont', 'region': 'california', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/claremont-graduate-university', 'facebook_url': 'facebook.com/claremontgraduateuniversity', 'twitter_url': 'twitter.com/cgunews', 'linkedin_id': '17843', 'website': 'cgu.edu', 'domain': 'cgu.edu'}, 'degrees': ['doctorates', 'doctor of philosophy'], 'start_date': '1981', 'end_date': '1983', 'majors': ['industrial and organizational psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'queens college', 'type': 'post-secondary institution', 'id': '7hlkmWGeBtRdgT3SYoiKCQ_0', 'location': {'name': 'queens, new york, united states', 'locality': 'queens', 'region': 'new york', 'country': 'united states', 'continent': 'north america'}, 'linkedin_url': 'linkedin.com/school/queens-college', 'facebook_url': 'facebook.com/queenscollege', 'twitter_url': 'twitter.com/qc_news', 'linkedin_id': '18935', 'website': 'qc.cuny.edu', 'domain': 'cuny.edu'}, 'degrees': ['bachelors', 'bachelor of arts'], 'start_date': '1971', 'end_date': '1975', 'majors': ['economics', 'psychology'], 'minors': [], 'gpa': None}, {'school': {'name': 'tel aviv university', 'type': 'post-secondary institution', 'id': 'KGTKnKcOCcRwfhLZS2Rt3g_0', 'location': {'name': 'tel aviv, israel', 'locality': None, 'region': 'tel aviv', 'country': 'israel', 'continent': 'asia'}, 'linkedin_url': 'linkedin.com/school/tel-aviv-university', 'facebook_url': 'facebook.com/tau.main', 'twitter_url': 'twitter.com/telavivuni1', 'linkedin_id': '13403', 'website': 'tau.ac.il', 'domain': 'tau.ac.il'}, 'degrees': ['masters', 'master of arts'], 'start_date': '2020', 'end_date': None, 'majors': [], 'minors': [], 'gpa': None}, {'school': {'name': 'tel aviv university', 'type': 'post-secondary institution', 'id': 'KGTKnKcOCcRwfhLZS2Rt3g_0', 'location': {'name': 'tel aviv, israel', 'locality': None, 'region': 'tel aviv', 'country': 'israel', 'continent': 'asia'}, 'linkedin_url': 'linkedin.com/school/tel-aviv-university', 'facebook_url': 'facebook.com/tau.main', 'twitter_url': 'twitter.com/telavivuni1', 'linkedin_id': '13403', 'website': 'tau.ac.il', 'domain': 'tau.ac.il'}, 'end_date': '2018', 'start_date': '2017', 'gpa': None, 'degrees': ['masters', 'master of arts'], 'majors': ['philosophy', 'history'], 'minors': []}]"
 
 ```
 
-If a list, should be able to access using [[]]. Convert to a vector. as.vector then use apply
+
+
+
+
+
+
+
+
