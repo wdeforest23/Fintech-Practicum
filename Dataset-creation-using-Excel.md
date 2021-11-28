@@ -22,6 +22,18 @@ PDL_Data <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fint
 
 ``` r
 DummyVars <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Dummy Variables 10.7.21.xlsx")
+ConcatData <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Concatenated_Vars.xlsx")
+```
+
+    ## New names:
+    ## * name -> name...1
+    ## * industry...8 -> industry...9
+    ## * name...20 -> name...21
+    ## * size...21 -> size...22
+    ## * id...22 -> id...23
+    ## * ...
+
+``` r
 Success_Measures <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Success Measures.xlsx")
 ```
 
@@ -122,7 +134,13 @@ Combo_Dummys
 
 ``` r
 library(dplyr)
-Combined_Data_Success_Dummies <- left_join(Combo_Dummys, Success_Measures, by=c("Company"="Company", "Founders.x"="Founders"))
+ConcatVars <- ConcatData %>% select(name...1, Company, company:major)
+Combo_Dummy_Concat <- left_join(Combo_Dummys, ConcatVars, by=c("founders_lower"="name...1", "Company"="Company"))
+```
+
+``` r
+library(dplyr)
+Combined_Data_Success_Dummies <- left_join(Combo_Dummy_Concat, Success_Measures, by=c("Company"="Company", "Founders.x"="Founders"))
 Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% mutate(standard_Total_Capital_Raised = (Total_Capital_Raised - mean(Total_Capital_Raised))/sd(Total_Capital_Raised), standard_Product_Market_Fit = (Product_Market_Fit - mean(Product_Market_Fit))/sd(Product_Market_Fit), standard_Total_Financing_Rounds = (Total_Financing_Rounds - mean(Total_Financing_Rounds))/sd(Total_Financing_Rounds), standard_Liquidity_Event_Reached = (Liquidity_Event_Reached - mean(Liquidity_Event_Reached))/sd(Liquidity_Event_Reached), standard_length_of_company_life = (length_of_company_life - mean(length_of_company_life, na.rm=TRUE))/sd(length_of_company_life, na.rm=TRUE), standard_Total_Top_VCs = (Total_Top_VCs - mean(Total_Top_VCs))/sd(Total_Top_VCs))
 
 Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% group_by(Company) %>% mutate(Combined_Success_Measure = sum(standard_Total_Capital_Raised, standard_Product_Market_Fit, standard_Total_Financing_Rounds, standard_Liquidity_Event_Reached, standard_length_of_company_life, standard_Total_Top_VCs, na.rm=TRUE))
@@ -141,7 +159,7 @@ write.csv(Unique_Obs_PDL,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fi
 ```
 
 ``` r
-write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression.csv", row.names = FALSE)
+write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_11.23.csv", row.names = FALSE)
 ```
 
 ``` r
@@ -211,52 +229,143 @@ Summary_7C
 library(dplyr)
 library(ggplot2)
 
-dist_total_capital_raised <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Capital_Raised)) + geom_density()
+dist_total_capital_raised <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Capital_Raised)) + geom_histogram()
 dist_total_capital_raised
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
-dist_Product_Market_Fit <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Product_Market_Fit)) + geom_density()
+dist_Product_Market_Fit <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Product_Market_Fit)) + geom_histogram()
 dist_Product_Market_Fit
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
 
 ``` r
-dist_Total_Financing_Rounds <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Financing_Rounds)) + geom_density()
+dist_Total_Financing_Rounds <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Financing_Rounds)) + geom_histogram()
 dist_Total_Financing_Rounds
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-3.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-3.png)<!-- -->
 
 ``` r
-dist_Liquidity_Event_Reached <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Liquidity_Event_Reached)) + geom_density()
+dist_Liquidity_Event_Reached <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Liquidity_Event_Reached)) + geom_histogram()
 dist_Liquidity_Event_Reached
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-4.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-4.png)<!-- -->
 
 ``` r
-dist_length_of_company_life <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_length_of_company_life)) + geom_density()
+dist_length_of_company_life <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_length_of_company_life)) + geom_histogram()
 dist_length_of_company_life
 ```
 
-    ## Warning: Removed 29 rows containing non-finite values (stat_density).
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-5.png)<!-- -->
+    ## Warning: Removed 29 rows containing non-finite values (stat_bin).
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-5.png)<!-- -->
 
 ``` r
-dist_Total_Top_VCs <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Top_VCs)) + geom_density()
+dist_Total_Top_VCs <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Top_VCs)) + geom_histogram()
 dist_Total_Top_VCs
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-6.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-6.png)<!-- -->
 
 ``` r
-dist_Combined_Success_Measure <- ggplot(data=Combined_Data_Success_Dummies, aes(x=Combined_Success_Measure)) + geom_density()
+dist_Combined_Success_Measure <- ggplot(data=Combined_Data_Success_Dummies, aes(x=Combined_Success_Measure)) + geom_histogram()
 dist_Combined_Success_Measure
 ```
 
-![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-11-7.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-12-7.png)<!-- -->
+
+``` r
+#Data with outliers removed. Outliers defined as observations with a Combined_Success_Measure greater than 3x the standard deviation of the Combined_Success_Measure.
+
+Data_No_Outliers <- Combined_Data_Success_Dummies %>% group_by(Company) %>% filter(!(Combined_Success_Measure >= sd(Combined_Data_Success_Dummies$Combined_Success_Measure)*3))
+
+write.csv(Data_No_Outliers,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_No_Outliers_11.23.csv", row.names = FALSE)
+```
+
+``` r
+#Standardized Success variable distributions with outliers removed
+library(dplyr)
+library(ggplot2)
+
+dist_total_capital_raised_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Total_Capital_Raised)) + geom_histogram()
+dist_total_capital_raised_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+dist_Product_Market_Fit_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Product_Market_Fit)) + geom_histogram()
+dist_Product_Market_Fit_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
+
+``` r
+dist_Total_Financing_Rounds_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Total_Financing_Rounds)) + geom_histogram()
+dist_Total_Financing_Rounds_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
+
+``` r
+dist_Liquidity_Event_Reached_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Liquidity_Event_Reached)) + geom_histogram()
+dist_Liquidity_Event_Reached_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-4.png)<!-- -->
+
+``` r
+dist_length_of_company_life_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_length_of_company_life)) + geom_histogram()
+dist_length_of_company_life_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 29 rows containing non-finite values (stat_bin).
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-5.png)<!-- -->
+
+``` r
+dist_Total_Top_VCs_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Total_Top_VCs)) + geom_histogram()
+dist_Total_Top_VCs_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-6.png)<!-- -->
+
+``` r
+dist_Combined_Success_Measure_no_out <- ggplot(data=Data_No_Outliers, aes(x=Combined_Success_Measure)) + geom_histogram()
+dist_Combined_Success_Measure_no_out
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Dataset-creation-using-Excel_files/figure-gfm/unnamed-chunk-14-7.png)<!-- -->
