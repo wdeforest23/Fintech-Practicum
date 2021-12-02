@@ -13,7 +13,16 @@ knitr::opts_chunk$set(echo = TRUE)
 **Dataset creation using Excel**
 
 ```{r}
+#load packages
+library(dplyr)
+library(tidyr)
+library(tidyverse)
 library(readxl)
+library(ggplot2)
+```
+
+
+```{r}
 AirTables_Data <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Companies-Fintech Practicum View.xlsx")
 Unique_Obs <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Unique_Company_Founder_Obs.xlsx")
 PDL_Data <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Final Clean PDL Data.xlsx")
@@ -22,7 +31,6 @@ ConcatData <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fi
 Success_Measures <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Success Measures.xlsx")
 ```
 ```{r}
-library(dplyr)
 Unique_Obs$founders_lower <- tolower(Unique_Obs$Founders)
 Unique_Obs_PDL <- left_join(Unique_Obs, PDL_Data, by=c("founders_lower"="full_name"))
 Unique_Obs_PDL
@@ -34,25 +42,34 @@ Combined_Data
 ```
 
 ```{r}
-library(dplyr)
 Combo_Dummys <- left_join(Combined_Data, DummyVars, by=c("founders_lower"="FOUNDER"))
 Combo_Dummys
 ```
 
 ```{r}
-library(dplyr)
 ConcatVars <- ConcatData %>% select(name...1, Company, company:major)
 Combo_Dummy_Concat <- left_join(Combo_Dummys, ConcatVars, by=c("founders_lower"="name...1", "Company"="Company"))
 ```
 
 
 ```{r}
-library(dplyr)
 Combined_Data_Success_Dummies <- left_join(Combo_Dummy_Concat, Success_Measures, by=c("Company"="Company", "Founders.x"="Founders"))
 Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% mutate(standard_Total_Capital_Raised = (Total_Capital_Raised - mean(Total_Capital_Raised))/sd(Total_Capital_Raised), standard_Product_Market_Fit = (Product_Market_Fit - mean(Product_Market_Fit))/sd(Product_Market_Fit), standard_Total_Financing_Rounds = (Total_Financing_Rounds - mean(Total_Financing_Rounds))/sd(Total_Financing_Rounds), standard_Liquidity_Event_Reached = (Liquidity_Event_Reached - mean(Liquidity_Event_Reached))/sd(Liquidity_Event_Reached), standard_length_of_company_life = (length_of_company_life - mean(length_of_company_life, na.rm=TRUE))/sd(length_of_company_life, na.rm=TRUE), standard_Total_Top_VCs = (Total_Top_VCs - mean(Total_Top_VCs))/sd(Total_Top_VCs))
 
 Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% group_by(Company) %>% mutate(Combined_Success_Measure = sum(standard_Total_Capital_Raised, standard_Product_Market_Fit, standard_Total_Financing_Rounds, standard_Liquidity_Event_Reached, standard_length_of_company_life, standard_Total_Top_VCs, na.rm=TRUE))
 ```
+
+```{r}
+#Create time since graduation variable and dummy variable for missing grad year
+Combined_Data_Success_Dummies$`Grad Year of Founder`[is.na(Combined_Data_Success_Dummies$`Grad Year of Founder`)] <- 0
+
+Combined_Data_Success_Dummies$`Grad Year of Founder` <- Combined_Data_Success_Dummies$`Grad Year of Founder` %>% str_remove_all(", .{0,4}") %>% as.numeric()
+
+Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% mutate(missing_grad_year = ifelse(`Grad Year of Founder`== "0", 1,0))
+
+Combined_Data_Success_Dummies <- Combined_Data_Success_Dummies %>% mutate(time_since_grad = ifelse(`Grad Year of Founder` != "0", 2021-`Grad Year of Founder`, 0))
+```
+
 
 ```{r}
 write.csv(Combined_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Master_Combined_Data.csv", row.names = FALSE)
@@ -67,41 +84,32 @@ write.csv(Unique_Obs_PDL,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fi
 ```
 
 ```{r}
-write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_11.23.csv", row.names = FALSE)
+write.csv(Combined_Data_Success_Dummies,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_11.30.csv", row.names = FALSE)
 ```
 
 ```{r}
 #summary statistics
 
-CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1")
+CMC_Obs <- Combined_Data_Success_Dummies %>% filter(CMC_Dummy == "1") %>% nrow()
 CMC_econ <- CMC_Obs %>% group_by(economics_dummy) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
-CMC_econ
-CMC_gender <- CMC_Obs %>% group_by(gender) %>% summarize(n=n()) %>% mutate(prop=n/sum(n))
-CMC_gender
 
-Pomona_Obs <- Combined_Data_Success_Dummies %>% filter(Pomona_Dummy == "1") %>% head()
+Pomona_Obs <- Combined_Data_Success_Dummies %>% filter(Pomona_Dummy == "1") %>% nrow()
 
-Pitzer_Obs <- Combined_Data_Success_Dummies %>% filter(Pitzer_Dummy == "1") %>% head()
+Pitzer_Obs <- Combined_Data_Success_Dummies %>% filter(Pitzer_Dummy == "1") %>% nrow()
 
-Scripps_Obs <- Combined_Data_Success_Dummies %>% filter(Scripps_Dummy == "1") %>% head()
+Scripps_Obs <- Combined_Data_Success_Dummies %>% filter(Scripps_Dummy == "1") %>% nrow()
 
-HMC_Obs <- Combined_Data_Success_Dummies %>% filter(HMC_Dummy == "1") %>% head()
+HMC_Obs <- Combined_Data_Success_Dummies %>% filter(HMC_Dummy == "1") %>% nrow()
 
 Summary_7C <- Combined_Data_Success_Dummies %>% rename("School_Affiliations_of_Founders"= 'School Affiliations of Founders') %>% group_by(School_Affiliations_of_Founders) %>% summarize(n=n()) %>% mutate(prop=n/sum(n), total=sum(n))
 Summary_7C
 
+School_Count <- (Combined_Data_Success_Dummies)[c(CMC_Dummy, Pomona_Dummy, Scripps_Dummy, HMC_Dummy, Pitzer_Dummy)] 
+
 ```
-
-
-
-
-
-
 
 ```{r}
 #Standardized Success variable distributions
-library(dplyr)
-library(ggplot2)
 
 dist_total_capital_raised <- ggplot(data=Combined_Data_Success_Dummies, aes(x=standard_Total_Capital_Raised)) + geom_histogram()
 dist_total_capital_raised
@@ -131,13 +139,11 @@ dist_Combined_Success_Measure
 
 Data_No_Outliers <- Combined_Data_Success_Dummies %>% group_by(Company) %>% filter(!(Combined_Success_Measure >= sd(Combined_Data_Success_Dummies$Combined_Success_Measure)*3))
 
-write.csv(Data_No_Outliers,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_No_Outliers_11.23.csv", row.names = FALSE)
+write.csv(Data_No_Outliers,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Combined_Data_For_Regression_No_Outliers_11.30.csv", row.names = FALSE)
 ```
 
 ```{r}
 #Standardized Success variable distributions with outliers removed
-library(dplyr)
-library(ggplot2)
 
 dist_total_capital_raised_no_out <- ggplot(data=Data_No_Outliers, aes(x=standard_Total_Capital_Raised)) + geom_histogram()
 dist_total_capital_raised_no_out
