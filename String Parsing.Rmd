@@ -25,6 +25,7 @@ library(rjson)
 #link to a video I used to install 'requests' in python: https://www.youtube.com/watch?v=HdJywzSCGbc
 Sys.setenv(RETICULATE_PYTHON = "C:\\Users\\wdd72\\AppData\\Local\\Programs\\Python\\Python310\\python.exe")
 library(reticulate)
+py_config() #this should match your preferred version of python
 ```
 
 
@@ -842,7 +843,7 @@ url_list = ["linkedin.com/in/kevinyamazaki/",
  
 data = {"requests": []}
 
-for url in url_list[0:100]:
+for url in url_list[0:5]:
     data['requests'].append({
         "params": {
             "profile": [url]
@@ -872,15 +873,36 @@ with open("output_data1.json", "w") as out:
       out.write(json.dumps(out_data))
 ```
 
-```{r}
-#import data from the json file
-json_data_1 <- fromJSON(file="C:/Users/wdd72/OneDrive/Documents/Junior Fall/Fintech Practicum/Fintech_Data/Automated Data Wrangling/output_data1.json")
+```{python}
+import json
+import csv
+import pandas as pd
 
-#convert json data into a dataframe
-json_data_df_1 <- do.call(rbind, json_data_1)
+
+with open('output_data1.json') as f:
+  data =json.load(f)
+data_file = open('data_file01.csv', 'w')
+
+#df_json = pd.read_json('output_data1.json')
+#df_json.to_excel('test.xlsx')
+
+csv_writer = csv.writer(data_file)
+
+count = 0
+ 
+for founder in data:
+  if count == 0:
+ 
+        
+      header = founder.keys()
+      csv_writer.writerow(header)
+      count += 1
+ 
+   
+  csv_writer.writerow(founder.values())
+ 
+data_file.close()
 ```
-
-
 
 ```{r}
 #import raw PDL data
@@ -994,41 +1016,5 @@ PDL_Data <- cbind(PDL_Data_raw, school, major, degree, edu_start, edu_end, compa
 #output data into Excel
 write.csv(PDL_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\PDL_Data_Parsed.csv", row.names = FALSE)
 ```
-
-
-#create 5C dummy variables
-
-school.df <- PDL_Data %>% select('id','School 1':'School 18')
-
-all_schools <- gather(school.df, key = key, value = school, 'School 1':'School 18')
-
-unique_schools <- (unique(all_schools['school']))
-
-dummyfun <- function(school, data) {}
-
-
-write.csv(School_Dummies, "C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\School_Dummies_Test.csv", row.names = FALSE)
-
-
-
-
-CMC_Dummy <- ifelse(as.list(PDL_Data['School 1':'School 18]') == "claremont mckenna college", 1,0)
-
-
-school_match <- match(unique_schools, school.df, nomatch="0")
-
-
-
-library(reshape2)
-
-
-
-School_Dummies <- dcast(melt(school.df,id.var="id"), id ~ value, length)
-
-CMC_Dummy <- dummy_cols(PDL_Data, select_columns = c('School 1', 'School 2'))
-
-
-
-
 
 
