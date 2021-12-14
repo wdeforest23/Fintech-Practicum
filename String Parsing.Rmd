@@ -33,7 +33,7 @@ py_config() #this should match your preferred version of python
 import requests
 import json
 
-API_KEY = '5c05369e4c54f17479afa729d59be1b2dae4149de916fea6fb8deddcbe5d7846'
+API_KEY = 'fe465c9ed97d7208b3f71bda0dbdefc42d529254a92d6c5a8295f4c8592fafe4'
 
 headers = {
    'X-Api-Key': API_KEY,
@@ -843,7 +843,7 @@ url_list = ["linkedin.com/in/kevinyamazaki/",
  
 data = {"requests": []}
 
-for url in url_list[0:5]:
+for url in url_list[10:20]:
     data['requests'].append({
         "params": {
             "profile": [url]
@@ -879,9 +879,9 @@ import csv
 import pandas as pd
 
 
-with open('output_data1.json') as f:
+with open('output_data2.json') as f:
   data =json.load(f)
-data_file = open('data_file01.csv', 'w')
+data_file = open('data_file02.csv', 'w', encoding="utf-8")
 
 #df_json = pd.read_json('output_data1.json')
 #df_json.to_excel('test.xlsx')
@@ -902,6 +902,28 @@ for founder in data:
   csv_writer.writerow(founder.values())
  
 data_file.close()
+```
+
+```{r}
+#combine the sets of PDL data
+
+PDL_Data_1 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file01.csv")
+
+PDL_Data_2 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file02.csv")
+
+PDL_Data_3 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file03.csv")
+
+PDL_Data_4 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file04.csv")
+
+PDL_Data_5 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file05.csv")
+
+PDL_Data_6 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file06.csv")
+
+PDL_Data_7 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file07.csv")
+
+PDL_Data_8 <- read.csv("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Automated Data Wrangling\\data_file08.csv")
+
+PDL_Data_raw <- rbind(PDL_Data_1, PDL_Data_2, PDL_Data_3, PDL_Data_4, PDL_Data_5, PDL_Data_6, PDL_Data_7, PDL_Data_8)
 ```
 
 ```{r}
@@ -1013,8 +1035,34 @@ PDL_Data <- cbind(PDL_Data_raw, school, major, degree, edu_start, edu_end, compa
 ```
 
 ```{r}
+#read in airtable data
+
+AirTables_Data <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Companies-Fintech Practicum View.xlsx")
+
+#read in unique founder-company observations
+Unique_Obs <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Unique_Company_Founder_Obs.xlsx")
+```
+
+```{r}
+#join the PDL data with the unique observations with founder name as the key
+Unique_Obs$founders_lower <- tolower(Unique_Obs$Founders)
+Unique_Obs_PDL <- left_join(Unique_Obs, PDL_Data, by=c("founders_lower"="full_name"))
+Unique_Obs_PDL
+```
+
+```{r}
+Combined_Data <- left_join(Unique_Obs_PDL, AirTables_Data, by=c("Company"="Name"))
+Combined_Data
+```
+
+```{r}
 #output data into Excel
 write.csv(PDL_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\PDL_Data_Parsed.csv", row.names = FALSE)
 ```
+
+```{r}
+write.csv(Combined_Data,"C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Master_Combined_Data.csv", row.names = FALSE)
+```
+
 
 
