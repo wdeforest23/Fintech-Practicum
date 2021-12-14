@@ -927,11 +927,6 @@ PDL_Data_raw <- rbind(PDL_Data_1, PDL_Data_2, PDL_Data_3, PDL_Data_4, PDL_Data_5
 ```
 
 ```{r}
-#import raw PDL data
-PDL_Data_raw <- read_excel("C:\\Users\\wdd72\\OneDrive\\Documents\\Junior Fall\\Fintech Practicum\\Fintech_Data\\Superseded\\founder-data1-all data.xlsx")
-```
-
-```{r}
 #separate experience and education strings
 
 Education_Sep <- str_split(PDL_Data_raw$education, "\\}, \\{")
